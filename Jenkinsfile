@@ -1,14 +1,24 @@
 pipeline {
     agent any
+    tools {
+        maven 'Maven3'
+        jdk 'JDK17'
+    }
     stages {
-        stage('Clone Repository') {
+        stage('Test') {
             steps {
-                checkout scm
+                sh 'mvn clean test'
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                    jacoco execPattern: '**/target/jacoco.exec'
+                }
             }
         }
-        stage('Print Message') {
+        stage('Build') {
             steps {
-                echo 'Jenkins trigger test successful!'
+                sh 'mvn clean install -P buildDocker'
             }
         }
     }
