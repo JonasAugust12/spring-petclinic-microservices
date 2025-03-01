@@ -1,24 +1,9 @@
 pipeline {
     agent any
-    tools {
-        maven 'Maven3'
-        jdk 'JDK17'
-    }
     stages {
-        stage('Test') {
+        stage('Clone') {
             steps {
-                sh 'mvn clean test'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                    jacoco execPattern: '**/target/jacoco.exec'
-                }
-            }
-        }
-        stage('Build') {
-            steps {
-                sh 'mvn clean install -P buildDocker'
+                git 'https://github.com/JonasAugust12/spring-petclinic-microservices.git'
             }
         }
     }
