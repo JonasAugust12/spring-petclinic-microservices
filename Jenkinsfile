@@ -1,9 +1,14 @@
 pipeline {
     agent any
     stages {
-        stage('Clone') {
+        stage('Clone Repository') {
             steps {
-                git 'https://github.com/JonasAugust12/spring-petclinic-microservices.git'
+                checkout scm
+            }
+        }
+        stage('Print Message') {
+            steps {
+                echo 'Jenkins trigger test successful!'
             }
         }
     }
