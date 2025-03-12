@@ -1,12 +1,11 @@
 pipeline {
     agent any
-    environment {
-        SERVICE_NAME = "" 
-    }
+    
     stages {
         stage('Detect Changes') {
             steps {
                 script {
+                    def SERVICE_NAME = ""
                     def changedFiles = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim().split("\n")
                     echo "Changed files: ${changedFiles}"
 
@@ -24,28 +23,30 @@ pipeline {
                     }
 
                     echo "Service to build: ${SERVICE_NAME}"
+                    
+                    env.SERVICE_NAME = SERVICE_NAME
                 }
             }
         }
 
         stage('Test') {
             when {
-                expression { return SERVICE_NAME != "" }
+                expression { return env.SERVICE_NAME != null && env.SERVICE_NAME != "" }
             }
             steps {
-                dir("${SERVICE_NAME}") {
+                dir("${env.SERVICE_NAME}") {
                     sh 'mvn clean test'
-                    junit 'target/surefire-reports/*.xml' // Upload test results
+                    junit 'target/surefire-reports/*.xml' 
                 }
             }
         }
 
         stage('Build') {
             when {
-                expression { return SERVICE_NAME != "" }
+                expression { return env.SERVICE_NAME != null && env.SERVICE_NAME != "" }
             }
             steps {
-                dir("${SERVICE_NAME}") {
+                dir("${env.SERVICE_NAME}") {
                     sh 'mvn clean package -DskipTests'
                 }
             }
