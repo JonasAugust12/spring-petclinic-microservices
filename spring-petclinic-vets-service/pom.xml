@@ -167,7 +167,7 @@
                                             <value>COVEREDRATIO</value>
                                             <minimum>0.70</minimum> <!-- Yêu cầu coverage tối thiểu 70% -->
                                         </limit>
-                                    </rules>
+                                    </limits>
                                 </rule>
                             </rules>
                         </configuration>
