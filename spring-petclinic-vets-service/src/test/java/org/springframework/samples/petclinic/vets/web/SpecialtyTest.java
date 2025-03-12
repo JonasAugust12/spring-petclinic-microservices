@@ -8,8 +8,7 @@ class SpecialtyTest {
 
     @Test
     void testSpecialtyGettersAndSetters() {
-        Specialty specialty = new Specialty();
-        specialty.setId(1);
+        Specialty specialty = new Specialty(1);
         specialty.setName("Dentistry");
 
         assertEquals(1, specialty.getId());
