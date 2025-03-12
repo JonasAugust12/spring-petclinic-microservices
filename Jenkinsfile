@@ -54,17 +54,23 @@ pipeline {
             }
             post {
                 always {
-                    // Báo cáo kết quả test
+                    // Báo cáo kết quả test chỉ của các service đã chạy test
                     junit '**/target/surefire-reports/*.xml'
-                    // Phân tích và kiểm tra coverage với ngưỡng 70%
-                    jacoco(
-                        execPattern: '**/target/jacoco.exec',
-                        classPattern: '**/target/classes',
-                        sourcePattern: '**/src/main/java',
-                        exclusionPattern: '**/src/test/**',
-                        minimumLineCoverage: '70', // Yêu cầu tối thiểu 70% line coverage
-                        changeBuildStatus: true // Thất bại nếu không đạt ngưỡng
-                    )
+
+                    script {
+                        def affectedServices = env.AFFECTED_SERVICES.split(',')
+                        for (service in affectedServices) {
+                            echo "Generating JaCoCo report for: ${service}"
+                            jacoco(
+                                execPattern: "${service}/target/jacoco.exec", // Chỉ lấy exec của service test
+                                classPattern: "${service}/target/classes",
+                                sourcePattern: "${service}/src/main/java",
+                                exclusionPattern: "${service}/src/test/**",
+                                minimumLineCoverage: '70', // Yêu cầu tối thiểu 70% coverage
+                                changeBuildStatus: true // Thất bại nếu không đạt ngưỡng
+                            )
+                        }
+                    }
                 }
             }
         }
