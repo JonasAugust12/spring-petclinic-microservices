@@ -1,24 +1,53 @@
 pipeline {
     agent any
-    tools {
-        maven 'Default'
-        jdk 'Default'
+    environment {
+        SERVICE_NAME = "" 
     }
     stages {
-        stage('Test') {
+        stage('Detect Changes') {
             steps {
-                sh 'mvn clean test'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                    jacoco execPattern: '**/target/jacoco.exec'
+                script {
+                    def changedFiles = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim().split("\n")
+                    echo "Changed files: ${changedFiles}"
+
+                    for (file in changedFiles) {
+                        if (file.startsWith("spring-petclinic-") && file.split("/").size() > 1) {
+                            SERVICE_NAME = file.split("/")[0]
+                            break
+                        }
+                    }
+
+                    if (SERVICE_NAME == "") {
+                        echo "No relevant service changes detected. Skipping pipeline."
+                        currentBuild.result = 'SUCCESS'
+                        return
+                    }
+
+                    echo "Service to build: ${SERVICE_NAME}"
                 }
             }
         }
-        stage('Build') {
+
+        stage('Test') {
+            when {
+                expression { return SERVICE_NAME != "" }
+            }
             steps {
-                sh 'mvn clean install -P buildDocker'
+                dir("${SERVICE_NAME}") {
+                    sh 'mvn clean test'
+                    junit 'target/surefire-reports/*.xml' // Upload test results
+                }
+            }
+        }
+
+        stage('Build') {
+            when {
+                expression { return SERVICE_NAME != "" }
+            }
+            steps {
+                dir("${SERVICE_NAME}") {
+                    sh 'mvn clean package -DskipTests'
+                }
             }
         }
     }
