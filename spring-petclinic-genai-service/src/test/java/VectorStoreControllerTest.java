@@ -34,7 +34,7 @@ class VectorStoreControllerTest {
         // Assert
         assertNotNull(resource);
         assertTrue(resource instanceof ByteArrayResource);
-    // }
+    }
 
     // @Test
     // void testConvertListToJsonResourceHandlesException() {
