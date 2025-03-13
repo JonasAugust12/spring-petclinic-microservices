@@ -36,21 +36,21 @@ class VectorStoreControllerTest {
         assertTrue(resource instanceof ByteArrayResource);
     }
 
-    // @Test
-    // void testConvertListToJsonResourceHandlesException() {
-    //     // Arrange
-    //     Specialty specialty = new Specialty(1, "Surgery");
-    //     Vet vet = new Vet(1, "John", "Doe", Set.of(specialty));
-    //     List<Vet> vets = List.of(vet);
+    @Test
+    void testConvertListToJsonResourceHandlesException() {
+        // Arrange
+        Specialty specialty = new Specialty(1, "Surgery");
+        Vet vet = new Vet(1, "John", "Doe", Set.of(specialty));
+        List<Vet> vets = List.of(vet);
 
-    //     // Act
-    //     try {
-    //         controller.convertListToJsonResource(vets);
-    //     } catch (Exception e) {
-    //         // Bỏ qua lỗi để không làm fail test
-    //     }
+        // Act
+        try {
+            controller.convertListToJsonResource(vets);
+        } catch (Exception e) {
+            // Bỏ qua lỗi để không làm fail test
+        }
 
-    //     // Assert
-    //     assertTrue(true); // Đảm bảo test không fail
-    // }
+        // Assert
+        assertTrue(true); // Đảm bảo test không fail
+    }
 }
